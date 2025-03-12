@@ -16,24 +16,24 @@ import lombok.Setter;
 
 public class Cliente {
     
-    private String id;
+    private String codigo;
     private String nome;
     private Double limite;
-    private LocalDate fatura;
+    private Integer fatura;
     
-    public Cliente(String id, String nome, Double limite, LocalDate fatura){
-        this.id = id;
+    public Cliente(String id, String nome, Double limite, Integer fatura){
+        this.codigo = id;
         this.nome = nome;
        this.limite = limite;
         this.fatura = fatura;
    }
     
     public String getId(){
-        return id;
+        return codigo;
     }
     
     public void setId(String id){
-        this.id = id;
+        this.codigo = id;
     }
     
     public String getNome(){
@@ -52,11 +52,11 @@ public class Cliente {
         this.limite = limite;
     }
     
-    public LocalDate getFatura(){
+    public Integer getFatura(){
         return fatura;
     }
     
-    public void setFatura(LocalDate fatura){
+    public void setFatura(Integer fatura){
         this.fatura = fatura;
     }
 }
