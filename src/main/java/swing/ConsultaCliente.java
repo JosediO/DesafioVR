@@ -5,6 +5,14 @@
 
 package swing;
 
+import entity.Cliente;
+import gateway.ClienteGateway;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author Josedi
@@ -28,20 +36,25 @@ public class ConsultaCliente extends javax.swing.JInternalFrame {
 
         consultaClientePanel = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
+        InputConsulta = new javax.swing.JTextField();
         consultar = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        TabelaClientes = new javax.swing.JTable();
         Voltar = new javax.swing.JButton();
         mostrarTodos = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
-        jLabel1.setText("Nome ou Código:");
+        jLabel1.setText("Código:");
 
         consultar.setText("Consultar");
+        consultar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                consultarActionPerformed(evt);
+            }
+        });
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        TabelaClientes.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -53,14 +66,14 @@ public class ConsultaCliente extends javax.swing.JInternalFrame {
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.Double.class, java.lang.String.class
+                java.lang.Integer.class, java.lang.String.class, java.lang.Double.class, java.lang.String.class
             };
 
             public Class getColumnClass(int columnIndex) {
                 return types [columnIndex];
             }
         });
-        jScrollPane1.setViewportView(jTable1);
+        jScrollPane1.setViewportView(TabelaClientes);
 
         Voltar.setText("Voltar");
         Voltar.addActionListener(new java.awt.event.ActionListener() {
@@ -87,9 +100,9 @@ public class ConsultaCliente extends javax.swing.JInternalFrame {
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, consultaClientePanelLayout.createSequentialGroup()
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 334, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(InputConsulta, javax.swing.GroupLayout.PREFERRED_SIZE, 334, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(consultar, javax.swing.GroupLayout.DEFAULT_SIZE, 113, Short.MAX_VALUE))
+                        .addComponent(consultar, javax.swing.GroupLayout.DEFAULT_SIZE, 166, Short.MAX_VALUE))
                     .addGroup(consultaClientePanelLayout.createSequentialGroup()
                         .addComponent(mostrarTodos)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -102,7 +115,7 @@ public class ConsultaCliente extends javax.swing.JInternalFrame {
                 .addContainerGap()
                 .addGroup(consultaClientePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(InputConsulta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(consultar))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 302, Short.MAX_VALUE)
@@ -128,12 +141,39 @@ public class ConsultaCliente extends javax.swing.JInternalFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void mostrarTodosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mostrarTodosActionPerformed
-        // TODO add your handling code here:
+        InputConsulta.setText(null);
+        List<Cliente> clientes = null;  
+        ClienteGateway gateway = new ClienteGateway();
+        try {
+            clientes = gateway.mostrarTodosClientes();
+        } catch (SQLException ex) {
+            Logger.getLogger(ConsultaCliente.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        DefaultTableModel modelo = (DefaultTableModel) TabelaClientes.getModel();
+        modelo.setRowCount(0);
+        
+        for (Cliente cliente : clientes) {
+            modelo.addRow(new Object[]{cliente.getId(), cliente.getNome(), cliente.getLimite(), cliente.getFatura()});
+        }
+    
+        
     }//GEN-LAST:event_mostrarTodosActionPerformed
 
     private void VoltarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_VoltarActionPerformed
         this.dispose();
     }//GEN-LAST:event_VoltarActionPerformed
+
+    private void consultarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_consultarActionPerformed
+        ClienteGateway consulta = new ClienteGateway();
+        Integer codigo = Integer.valueOf(InputConsulta.getText());
+        Cliente cliente = consulta.consultaCliente(codigo);
+         
+         TabelaClientes.setValueAt(cliente.getId(), 0, 0);
+         TabelaClientes.setValueAt(cliente.getNome(),0,1);
+         TabelaClientes.setValueAt(cliente.getLimite(),0,2);
+         TabelaClientes.setValueAt(cliente.getFatura(),0,3);
+    }//GEN-LAST:event_consultarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -172,13 +212,13 @@ public class ConsultaCliente extends javax.swing.JInternalFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextField InputConsulta;
+    private javax.swing.JTable TabelaClientes;
     private javax.swing.JButton Voltar;
     private javax.swing.JPanel consultaClientePanel;
     private javax.swing.JButton consultar;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
-    private javax.swing.JTextField jTextField1;
     private javax.swing.JButton mostrarTodos;
     // End of variables declaration//GEN-END:variables
 
