@@ -15,48 +15,57 @@ import lombok.Setter;
  */
 
 public class Cliente {
-    
+
     private String codigo;
     private String nome;
     private Double limite;
     private Integer fatura;
-    
-    public Cliente(String id, String nome, Double limite, Integer fatura){
-        this.codigo = id;
+
+    public Cliente(String codigo, String nome, Double limite, Integer fatura) {
+        this.codigo = codigo;
         this.nome = nome;
-       this.limite = limite;
+        this.limite = limite;
         this.fatura = fatura;
-   }
-    
-    public String getId(){
+    }
+
+    public Cliente(String nome, Double limite, Integer fatura) {
+        this.nome = nome;
+        this.limite = limite;
+        this.fatura = fatura;
+    }
+
+    public Cliente() {
+        }
+
+    public String getCodigo() {
         return codigo;
     }
-    
-    public void setId(String id){
-        this.codigo = id;
+
+    public void setCodigo(String codigo) {
+        this.codigo = codigo;
     }
-    
-    public String getNome(){
+
+    public String getNome() {
         return nome;
     }
-    
-    public void setNome(String nome){
+
+    public void setNome(String nome) {
         this.nome = nome;
     }
-    
-    public Double getLimite(){
+
+    public Double getLimite() {
         return limite;
     }
-    
-    public void setLimite(Double limite){
+
+    public void setLimite(Double limite) {
         this.limite = limite;
     }
-    
-    public Integer getFatura(){
+
+    public Integer getFatura() {
         return fatura;
     }
-    
-    public void setFatura(Integer fatura){
+
+    public void setFatura(Integer fatura) {
         this.fatura = fatura;
     }
 }
