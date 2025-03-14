@@ -5,17 +5,23 @@
 package swing;
 
 import entity.Cliente;
+import exceptions.DataFaturaException;
+import exceptions.LimiteException;
+import exceptions.NomeInvalidoException;
 import gateway.ClienteGateway;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import service.ClienteService;
 
 /**
  *
  * @author Josedi
  */
 public class CadastrarCliente extends javax.swing.JInternalFrame {
+
+    private ClienteService service = new ClienteService();
 
     /**
      * Creates new form ConsultaCliente
@@ -153,14 +159,13 @@ public class CadastrarCliente extends javax.swing.JInternalFrame {
 
         try {
 
-            ClienteGateway gateway = new ClienteGateway();
-           Cliente cliente = new Cliente();
+            Cliente cliente = new Cliente();
 
             cliente.setNome(CampoNomeDoCliente.getText());
             cliente.setLimite(Double.parseDouble(CampoLimiteDoCliente.getText()));
             cliente.setFatura(Integer.parseInt(CampoDiaDaFatura.getText()));
 
-            gateway.cadastrarCliente(cliente);
+            service.cadastrarCliente(cliente);
 
             JOptionPane.showMessageDialog(this, "Cliente cadastrado com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
 
@@ -168,9 +173,13 @@ public class CadastrarCliente extends javax.swing.JInternalFrame {
             CampoLimiteDoCliente.setText("");
             CampoDiaDaFatura.setText("");
 
+        } catch (NomeInvalidoException | LimiteException | DataFaturaException e) {
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Erro de validação", JOptionPane.WARNING_MESSAGE);
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(this, "Erro ao cadastrar cliente no banco de dados.", "Erro SQL", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Preencha os campos corretamente!", "Erro de Formato", JOptionPane.ERROR_MESSAGE);
         }
 
     }//GEN-LAST:event_CadastrarActionPerformed

@@ -5,10 +5,14 @@
 package swing;
 
 import entity.Cliente;
+import exceptions.CodigoInvalidoException;
 import gateway.ClienteGateway;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import service.ClienteService;
 
 /**
  *
@@ -16,6 +20,7 @@ import javax.swing.table.DefaultTableModel;
  */
 public class ExcluirCliente extends javax.swing.JInternalFrame {
 
+     private ClienteService service = new ClienteService();
     /**
      * Creates new form ConsultaCliente
      */
@@ -142,13 +147,20 @@ public class ExcluirCliente extends javax.swing.JInternalFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void ExcluirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ExcluirActionPerformed
-        ClienteGateway gateway = new ClienteGateway();
+        try{
         Integer codigo = Integer.valueOf(InputConsulta.getText());
-        gateway.deletarCliente(codigo);
+        service.deletarCliente(codigo);
         JOptionPane.showMessageDialog(this, "Cliente excluido com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
         InputConsulta.setText("");
         DefaultTableModel clean = (DefaultTableModel) TabelaClientes.getModel();
         clean.setRowCount(0);
+        }catch(CodigoInvalidoException e){
+            JOptionPane.showMessageDialog(this, e.getMessage(),"Código Invalido", JOptionPane.INFORMATION_MESSAGE);
+        }catch(SQLException e){
+            Logger.getLogger(ExcluirCliente.class.getName()).log(Level.SEVERE, null, e);
+            JOptionPane.showMessageDialog(this, "Erro ao excluir clientes.", "Erro", JOptionPane.ERROR_MESSAGE);
+        
+        }
     }//GEN-LAST:event_ExcluirActionPerformed
 
     private void VoltarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_VoltarActionPerformed
@@ -156,14 +168,19 @@ public class ExcluirCliente extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_VoltarActionPerformed
 
     private void BuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BuscarActionPerformed
-        ClienteGateway gateway = new ClienteGateway();
+        try{
         Integer codigo = Integer.valueOf(InputConsulta.getText());
-        Cliente cliente = gateway.consultaCliente(codigo);
+        Cliente cliente = service.getClienteByCodigo(codigo);
 
         TabelaClientes.setValueAt(cliente.getCodigo(), 0, 0);
         TabelaClientes.setValueAt(cliente.getNome(), 0, 1);
         TabelaClientes.setValueAt(cliente.getLimite(), 0, 2);
         TabelaClientes.setValueAt(cliente.getFatura(), 0, 3);
+        }catch(CodigoInvalidoException e){
+            JOptionPane.showMessageDialog(this, e.getMessage(),"Código Invalido", JOptionPane.INFORMATION_MESSAGE);
+        }catch(NumberFormatException e){
+             JOptionPane.showMessageDialog(this,"Insira um código valido.","Código Invalido", JOptionPane.INFORMATION_MESSAGE);
+        }
     }//GEN-LAST:event_BuscarActionPerformed
 
     /**
