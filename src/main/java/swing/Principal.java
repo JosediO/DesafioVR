@@ -92,6 +92,11 @@ public class Principal extends javax.swing.JFrame {
         Clientes.add(EditarCliente);
 
         ExcluirCliente.setText("Excluir");
+        ExcluirCliente.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ExcluirClienteActionPerformed(evt);
+            }
+        });
         Clientes.add(ExcluirCliente);
 
         jMenuBar1.add(Clientes);
@@ -227,6 +232,13 @@ public class Principal extends javax.swing.JFrame {
         PrincipalPanel.add(editarProduto);
         editarProduto.setVisible(true);
     }//GEN-LAST:event_EditarProdutosActionPerformed
+
+    private void ExcluirClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ExcluirClienteActionPerformed
+        ExcluirCliente excluirCliente = new ExcluirCliente();
+        pack();
+        PrincipalPanel.add(excluirCliente);
+        excluirCliente.setVisible(true);
+    }//GEN-LAST:event_ExcluirClienteActionPerformed
 
     /**
      * @param args the command line arguments

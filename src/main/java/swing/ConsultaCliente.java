@@ -154,7 +154,7 @@ public class ConsultaCliente extends javax.swing.JInternalFrame {
         modelo.setRowCount(0);
         
         for (Cliente cliente : clientes) {
-            modelo.addRow(new Object[]{cliente.getId(), cliente.getNome(), cliente.getLimite(), cliente.getFatura()});
+            modelo.addRow(new Object[]{cliente.getCodigo(), cliente.getNome(), cliente.getLimite(), cliente.getFatura()});
         }
     
         
@@ -169,7 +169,7 @@ public class ConsultaCliente extends javax.swing.JInternalFrame {
         Integer codigo = Integer.valueOf(InputConsulta.getText());
         Cliente cliente = consulta.consultaCliente(codigo);
          
-         TabelaClientes.setValueAt(cliente.getId(), 0, 0);
+         TabelaClientes.setValueAt(cliente.getCodigo(), 0, 0);
          TabelaClientes.setValueAt(cliente.getNome(),0,1);
          TabelaClientes.setValueAt(cliente.getLimite(),0,2);
          TabelaClientes.setValueAt(cliente.getFatura(),0,3);
