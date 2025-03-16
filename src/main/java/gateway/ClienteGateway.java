@@ -22,6 +22,21 @@ public class ClienteGateway {
 
     private ConfigJDBC configJDBC = new ConfigJDBC();
 
+    public Boolean clientExist(Integer codigo) throws SQLException {
+        if (codigo == null || codigo <= 0) {
+            return false;
+        }
+        String sql = "SELECT 1 FROM Clientes WHERE codigo = ?";
+
+        try (Connection conn = configJDBC.createConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, codigo);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                return rs.next();
+            }
+        }
+    }
+
     public Cliente consultaCliente(Integer input) {
         Cliente cliente = null;
         String sql = "SELECT codigo, nome, limite, fatura FROM clientes WHERE codigo = ?";
@@ -81,8 +96,8 @@ public class ClienteGateway {
 
             try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
-                    int codigoGerado = generatedKeys.getInt(1); // Obtém o ID gerado pelo banco
-                    cliente.setCodigo(String.valueOf(codigoGerado)); // Atualiza o ID do cliente com o valor gerado
+                    int codigoGerado = generatedKeys.getInt(1);
+                    cliente.setCodigo(String.valueOf(codigoGerado));
                 }
             }
         } catch (SQLException e) {
@@ -102,7 +117,6 @@ public class ClienteGateway {
         stmt.setInt(4, Integer.parseInt(cliente.getCodigo()));
 
         stmt.executeUpdate();
-
         return cliente;
     }
 
