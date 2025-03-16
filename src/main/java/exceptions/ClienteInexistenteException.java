@@ -8,9 +8,9 @@ package exceptions;
  *
  * @author Josedi
  */
-public class LimiteException extends RuntimeException{
+public class ClienteInexistenteException extends RuntimeException{
     
-    public LimiteException(String message) {
+    public ClienteInexistenteException(String message) {
         super(message);
     }
 }
