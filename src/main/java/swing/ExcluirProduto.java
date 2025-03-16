@@ -5,16 +5,27 @@
 
 package swing;
 
+import entity.Produto;
+import exceptions.CodigoInvalidoException;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import service.ProdutoService;
+
 /**
  *
  * @author Josedi
  */
 public class ExcluirProduto extends javax.swing.JInternalFrame {
+    
+    private ProdutoService service = new ProdutoService();
 
     /** Creates new form ConsultaCliente */
     public ExcluirProduto() {
         initComponents();
-        setTitle("Editar Produto");
+        setTitle("Excluir Produto");
     }
 
     /** This method is called from within the constructor to
@@ -28,20 +39,25 @@ public class ExcluirProduto extends javax.swing.JInternalFrame {
 
         consultaClientePanel = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
+        CampoProduto = new javax.swing.JTextField();
         consultar = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        TabelaProdutos = new javax.swing.JTable();
         Voltar = new javax.swing.JButton();
-        mostrarTodos = new javax.swing.JButton();
+        Excluir = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
-        jLabel1.setText("Nome ou Código:");
+        jLabel1.setText("Código do Produto:");
 
         consultar.setText("Buscar");
+        consultar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                consultarActionPerformed(evt);
+            }
+        });
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        TabelaProdutos.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null},
                 {null, null, null},
@@ -60,7 +76,7 @@ public class ExcluirProduto extends javax.swing.JInternalFrame {
                 return types [columnIndex];
             }
         });
-        jScrollPane1.setViewportView(jTable1);
+        jScrollPane1.setViewportView(TabelaProdutos);
 
         Voltar.setText("Voltar");
         Voltar.addActionListener(new java.awt.event.ActionListener() {
@@ -69,10 +85,10 @@ public class ExcluirProduto extends javax.swing.JInternalFrame {
             }
         });
 
-        mostrarTodos.setText("Excluir");
-        mostrarTodos.addActionListener(new java.awt.event.ActionListener() {
+        Excluir.setText("Excluir");
+        Excluir.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                mostrarTodosActionPerformed(evt);
+                ExcluirActionPerformed(evt);
             }
         });
 
@@ -87,13 +103,13 @@ public class ExcluirProduto extends javax.swing.JInternalFrame {
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, consultaClientePanelLayout.createSequentialGroup()
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 334, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(CampoProduto, javax.swing.GroupLayout.PREFERRED_SIZE, 334, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(consultar, javax.swing.GroupLayout.DEFAULT_SIZE, 113, Short.MAX_VALUE))
+                        .addComponent(consultar, javax.swing.GroupLayout.DEFAULT_SIZE, 103, Short.MAX_VALUE))
                     .addGroup(consultaClientePanelLayout.createSequentialGroup()
                         .addComponent(Voltar, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(mostrarTodos, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(Excluir, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         consultaClientePanelLayout.setVerticalGroup(
@@ -102,14 +118,14 @@ public class ExcluirProduto extends javax.swing.JInternalFrame {
                 .addContainerGap()
                 .addGroup(consultaClientePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(CampoProduto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(consultar))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(consultaClientePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(Voltar, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(mostrarTodos, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(Excluir, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -127,13 +143,49 @@ public class ExcluirProduto extends javax.swing.JInternalFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void mostrarTodosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mostrarTodosActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_mostrarTodosActionPerformed
+    private void ExcluirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ExcluirActionPerformed
+        try{
+            Integer prodCod = Integer.valueOf(CampoProduto.getText());
+            service.deletarProduto(prodCod);
+            JOptionPane.showMessageDialog(this, "Produto excluido com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+            CampoProduto.setText("");
+            DefaultTableModel clean = (DefaultTableModel) TabelaProdutos.getModel();
+            clean.setRowCount(0);
+        }catch(CodigoInvalidoException e){
+            JOptionPane.showMessageDialog(this, e.getMessage(),"Código Invalido", JOptionPane.INFORMATION_MESSAGE);
+        }catch(SQLException e){
+            Logger.getLogger(ExcluirCliente.class.getName()).log(Level.SEVERE, null, e);
+            JOptionPane.showMessageDialog(this, "Erro ao excluir clientes.", "Erro", JOptionPane.ERROR_MESSAGE);
+        
+        }
+    }//GEN-LAST:event_ExcluirActionPerformed
 
     private void VoltarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_VoltarActionPerformed
         this.dispose();
     }//GEN-LAST:event_VoltarActionPerformed
+
+    private void consultarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_consultarActionPerformed
+        try{
+            Integer codigo = Integer.valueOf(CampoProduto.getText());
+            Produto produto = service.getProdutoByCodigo(codigo);
+            
+            DefaultTableModel modelo = (DefaultTableModel) TabelaProdutos.getModel();
+            modelo.setRowCount(1);
+            
+            TabelaProdutos.setValueAt(produto.getPCod(), 0, 0);
+            TabelaProdutos.setValueAt(produto.getPDescription(), 0, 1);
+            TabelaProdutos.setValueAt(produto.getPPreco(), 0, 2);
+            
+        }catch(CodigoInvalidoException e){
+            JOptionPane.showMessageDialog(this, e.getMessage(),"Código Invalido", JOptionPane.INFORMATION_MESSAGE);
+        }catch(NumberFormatException e){
+             JOptionPane.showMessageDialog(this,"Insira um código valido.","Código Invalido", JOptionPane.INFORMATION_MESSAGE);
+        } catch (SQLException ex) {
+            Logger.getLogger(ConsultaProduto.class.getName()).log(Level.SEVERE, null, ex);
+        }catch(NullPointerException e){
+            JOptionPane.showMessageDialog(this,"O produto não foi encontrado ou não existe");
+        }
+    }//GEN-LAST:event_consultarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -172,14 +224,14 @@ public class ExcluirProduto extends javax.swing.JInternalFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextField CampoProduto;
+    private javax.swing.JButton Excluir;
+    private javax.swing.JTable TabelaProdutos;
     private javax.swing.JButton Voltar;
     private javax.swing.JPanel consultaClientePanel;
     private javax.swing.JButton consultar;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JButton mostrarTodos;
     // End of variables declaration//GEN-END:variables
 
 }

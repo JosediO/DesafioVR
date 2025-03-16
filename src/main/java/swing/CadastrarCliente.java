@@ -6,7 +6,7 @@ package swing;
 
 import entity.Cliente;
 import exceptions.DataFaturaException;
-import exceptions.LimiteException;
+import exceptions.ValorException;
 import exceptions.NomeInvalidoException;
 import gateway.ClienteGateway;
 import java.sql.SQLException;
@@ -173,7 +173,7 @@ public class CadastrarCliente extends javax.swing.JInternalFrame {
             CampoLimiteDoCliente.setText("");
             CampoDiaDaFatura.setText("");
 
-        } catch (NomeInvalidoException | LimiteException | DataFaturaException e) {
+        } catch (NomeInvalidoException | ValorException | DataFaturaException e) {
             JOptionPane.showMessageDialog(this, e.getMessage(), "Erro de validação", JOptionPane.WARNING_MESSAGE);
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(this, "Erro ao cadastrar cliente no banco de dados.", "Erro SQL", JOptionPane.ERROR_MESSAGE);

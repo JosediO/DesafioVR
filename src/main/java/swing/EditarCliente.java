@@ -7,7 +7,7 @@ package swing;
 import entity.Cliente;
 import exceptions.CodigoInvalidoException;
 import exceptions.DataFaturaException;
-import exceptions.LimiteException;
+import exceptions.ValorException;
 import exceptions.NomeInvalidoException;
 import gateway.ClienteGateway;
 import java.sql.SQLException;
@@ -230,7 +230,7 @@ public class EditarCliente extends javax.swing.JInternalFrame {
             ex.printStackTrace();
         } catch (CodigoInvalidoException e) {
             JOptionPane.showMessageDialog(this, e.getMessage(), "Código Vazio", JOptionPane.INFORMATION_MESSAGE);
-        }catch (NomeInvalidoException | LimiteException | DataFaturaException e) {
+        }catch (NomeInvalidoException | ValorException | DataFaturaException e) {
             JOptionPane.showMessageDialog(this, e.getMessage(), "Erro de validação", JOptionPane.WARNING_MESSAGE);
         }catch(NullPointerException e){
             JOptionPane.showMessageDialog(this,"Preencha os campos para edição", "Campo Vazio",JOptionPane.INFORMATION_MESSAGE);
@@ -265,6 +265,8 @@ public class EditarCliente extends javax.swing.JInternalFrame {
             JOptionPane.showMessageDialog(this, e.getMessage(), "Código Invalido", JOptionPane.INFORMATION_MESSAGE);
         }catch(NumberFormatException e){
              JOptionPane.showMessageDialog(this,"Insira um código valido.","Código Invalido", JOptionPane.INFORMATION_MESSAGE);
+        }catch(NullPointerException e){
+            JOptionPane.showMessageDialog(this,"O cliente não foi encontrado ou não existe");
         }
     }//GEN-LAST:event_BuscarClienteActionPerformed
 

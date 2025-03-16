@@ -5,12 +5,23 @@
 
 package swing;
 
+import entity.Produto;
+import exceptions.DataFaturaException;
+import exceptions.NomeInvalidoException;
+import exceptions.ValorException;
+import java.math.BigDecimal;
+import java.sql.SQLException;
+import javax.swing.JOptionPane;
+import service.ProdutoService;
+
 /**
  *
  * @author Josedi
  */
 public class CadastrarProduto extends javax.swing.JInternalFrame {
 
+    private ProdutoService service = new ProdutoService();
+    
     /** Creates new form ConsultaCliente */
     public CadastrarProduto() {
         initComponents();
@@ -28,10 +39,10 @@ public class CadastrarProduto extends javax.swing.JInternalFrame {
 
         consultaClientePanel = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
-        jTextField2 = new javax.swing.JTextField();
+        CampoProduto = new javax.swing.JTextField();
+        CampoPreco = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
+        Cadastrar = new javax.swing.JButton();
         jLabel4 = new javax.swing.JLabel();
         Voltar = new javax.swing.JButton();
 
@@ -39,18 +50,22 @@ public class CadastrarProduto extends javax.swing.JInternalFrame {
 
         jLabel1.setText("Nome do Produto:");
 
-        jTextField2.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
-        jTextField2.setText("0,00");
-        jTextField2.addActionListener(new java.awt.event.ActionListener() {
+        CampoPreco.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        CampoPreco.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField2ActionPerformed(evt);
+                CampoPrecoActionPerformed(evt);
             }
         });
 
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel2.setText("Preço:");
 
-        jButton1.setText("Cadastrar");
+        Cadastrar.setText("Cadastrar");
+        Cadastrar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                CadastrarActionPerformed(evt);
+            }
+        });
 
         jLabel4.setText("R$");
 
@@ -72,15 +87,15 @@ public class CadastrarProduto extends javax.swing.JInternalFrame {
                     .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(consultaClientePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jTextField1)
+                    .addComponent(CampoProduto)
                     .addGroup(consultaClientePanelLayout.createSequentialGroup()
-                        .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(CampoPreco, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel4)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 158, Short.MAX_VALUE)
                         .addComponent(Voltar, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(Cadastrar, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         consultaClientePanelLayout.setVerticalGroup(
@@ -89,13 +104,13 @@ public class CadastrarProduto extends javax.swing.JInternalFrame {
                 .addContainerGap()
                 .addGroup(consultaClientePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(CampoProduto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(consultaClientePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
-                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(CampoPreco, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel4)
-                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(Cadastrar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(Voltar))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -121,9 +136,34 @@ public class CadastrarProduto extends javax.swing.JInternalFrame {
         this.dispose();
     }//GEN-LAST:event_VoltarActionPerformed
 
-    private void jTextField2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField2ActionPerformed
+    private void CampoPrecoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CampoPrecoActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField2ActionPerformed
+    }//GEN-LAST:event_CampoPrecoActionPerformed
+
+    private void CadastrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CadastrarActionPerformed
+        
+        try{
+            Produto produto = new Produto();
+            
+            produto.setPDescription(CampoProduto.getText());
+            produto.setPPreco(new BigDecimal(CampoPreco.getText()));
+            
+            service.cadastrarProduto(produto);
+            
+            JOptionPane.showMessageDialog(this, "Produto cadastrado com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+        
+            CampoPreco.setText("");
+            CampoProduto.setText("");
+            
+        } catch (NomeInvalidoException e) {
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Erro de validação", JOptionPane.WARNING_MESSAGE);
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Erro ao cadastrar cliente no banco de dados.", "Erro SQL", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Preencha os campos corretamente!", "Erro de Formato", JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_CadastrarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -176,14 +216,14 @@ public class CadastrarProduto extends javax.swing.JInternalFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton Cadastrar;
+    private javax.swing.JTextField CampoPreco;
+    private javax.swing.JTextField CampoProduto;
     private javax.swing.JButton Voltar;
     private javax.swing.JPanel consultaClientePanel;
-    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
     // End of variables declaration//GEN-END:variables
 
 }

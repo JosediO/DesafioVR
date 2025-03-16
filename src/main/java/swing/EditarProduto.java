@@ -5,16 +5,42 @@
 
 package swing;
 
+import entity.Produto;
+import exceptions.CodigoInvalidoException;
+import exceptions.DataFaturaException;
+import exceptions.NomeInvalidoException;
+import exceptions.ValorException;
+import java.math.BigDecimal;
+import java.sql.SQLException;
+import java.util.List;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import service.ProdutoService;
+
 /**
  *
  * @author Josedi
  */
 public class EditarProduto extends javax.swing.JInternalFrame {
+    
+    private ProdutoService service = new ProdutoService();
 
     /** Creates new form ConsultaCliente */
     public EditarProduto() {
         initComponents();
         setTitle("Editar Produto");
+    }
+    
+    private void atualizarTabela() throws SQLException {
+
+        DefaultTableModel modelo = (DefaultTableModel) TabelaProduto.getModel();
+        modelo.setRowCount(0); // 
+
+        List<Produto> produtos = service.mostrarTodosProdutos();
+        for (Produto p : produtos) {
+            modelo.addRow(new Object[]{p.getPCod(),p.getPDescription(),p.getPPreco()});
+        }
+
     }
 
     /** This method is called from within the constructor to
@@ -28,25 +54,30 @@ public class EditarProduto extends javax.swing.JInternalFrame {
 
         consultaClientePanel = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
-        consultar = new javax.swing.JButton();
+        CampoProduto = new javax.swing.JTextField();
+        buscarProduto = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        TabelaProduto = new javax.swing.JTable();
         Voltar = new javax.swing.JButton();
-        mostrarTodos = new javax.swing.JButton();
+        Salvar = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
-        jTextField2 = new javax.swing.JTextField();
+        CampoNovaDescricao = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
-        jTextField3 = new javax.swing.JTextField();
+        CampoNovoPreco = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
-        jLabel1.setText("Nome ou Código:");
+        jLabel1.setText("Código do Produto:");
 
-        consultar.setText("Buscar");
+        buscarProduto.setText("Buscar");
+        buscarProduto.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buscarProdutoActionPerformed(evt);
+            }
+        });
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        TabelaProduto.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null},
                 {null, null, null},
@@ -65,7 +96,7 @@ public class EditarProduto extends javax.swing.JInternalFrame {
                 return types [columnIndex];
             }
         });
-        jScrollPane1.setViewportView(jTable1);
+        jScrollPane1.setViewportView(TabelaProduto);
 
         Voltar.setText("Voltar");
         Voltar.addActionListener(new java.awt.event.ActionListener() {
@@ -74,10 +105,10 @@ public class EditarProduto extends javax.swing.JInternalFrame {
             }
         });
 
-        mostrarTodos.setText("Salvar");
-        mostrarTodos.addActionListener(new java.awt.event.ActionListener() {
+        Salvar.setText("Salvar");
+        Salvar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                mostrarTodosActionPerformed(evt);
+                SalvarActionPerformed(evt);
             }
         });
 
@@ -87,9 +118,9 @@ public class EditarProduto extends javax.swing.JInternalFrame {
         jLabel3.setText("Novo Preço:");
         jLabel3.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
 
-        jTextField3.addActionListener(new java.awt.event.ActionListener() {
+        CampoNovoPreco.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField3ActionPerformed(evt);
+                CampoNovoPrecoActionPerformed(evt);
             }
         });
 
@@ -107,10 +138,10 @@ public class EditarProduto extends javax.swing.JInternalFrame {
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, consultaClientePanelLayout.createSequentialGroup()
                         .addComponent(jLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 334, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(consultar, javax.swing.GroupLayout.DEFAULT_SIZE, 113, Short.MAX_VALUE))
+                        .addComponent(CampoProduto, javax.swing.GroupLayout.PREFERRED_SIZE, 334, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(buscarProduto, javax.swing.GroupLayout.DEFAULT_SIZE, 97, Short.MAX_VALUE))
                     .addGroup(consultaClientePanelLayout.createSequentialGroup()
                         .addGroup(consultaClientePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -118,15 +149,15 @@ public class EditarProduto extends javax.swing.JInternalFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(consultaClientePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(consultaClientePanelLayout.createSequentialGroup()
-                                .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, 157, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(CampoNovoPreco, javax.swing.GroupLayout.PREFERRED_SIZE, 157, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(0, 0, Short.MAX_VALUE))
-                            .addComponent(jTextField2)))
+                            .addComponent(CampoNovaDescricao)))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, consultaClientePanelLayout.createSequentialGroup()
                         .addComponent(Voltar, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(mostrarTodos, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(Salvar, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         consultaClientePanelLayout.setVerticalGroup(
@@ -135,22 +166,22 @@ public class EditarProduto extends javax.swing.JInternalFrame {
                 .addContainerGap()
                 .addGroup(consultaClientePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(consultar))
+                    .addComponent(CampoProduto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(buscarProduto))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(consultaClientePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
-                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(CampoNovaDescricao, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(consultaClientePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
-                    .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(CampoNovoPreco, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel4))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(consultaClientePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(mostrarTodos, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(Salvar, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(Voltar, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -169,17 +200,65 @@ public class EditarProduto extends javax.swing.JInternalFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void mostrarTodosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mostrarTodosActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_mostrarTodosActionPerformed
+    private void SalvarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SalvarActionPerformed
+        try{
+            Integer campoProdCod = Integer.valueOf(CampoProduto.getText());
+            Produto produto = new Produto();
+            produto.setPCod(campoProdCod);
+            
+            produto.setPDescription(CampoNovaDescricao != null && CampoNovaDescricao.getText().isEmpty() ? produto.getPDescription() : CampoNovaDescricao.getText());
+            produto.setPPreco( CampoNovoPreco != null && CampoNovoPreco.getText().isEmpty() ?  produto.getPPreco(): new BigDecimal(CampoNovoPreco.getText()));
+
+            service.editarProduto(produto);
+            JOptionPane.showMessageDialog(this, "Produto Atualizado com Sucesso!", "Atuazização Concluida", JOptionPane.INFORMATION_MESSAGE);
+            
+            CampoNovaDescricao.setText("");
+            CampoNovoPreco.setText("");
+            atualizarTabela();
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Erro:" + ex, "ERROR SQL", JOptionPane.ERROR_MESSAGE);
+            ex.printStackTrace();
+        } catch (CodigoInvalidoException e) {
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Código Vazio", JOptionPane.INFORMATION_MESSAGE);
+        }catch (NomeInvalidoException | ValorException | DataFaturaException e) {
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Erro de validação", JOptionPane.WARNING_MESSAGE);
+        }catch(NullPointerException e){
+            JOptionPane.showMessageDialog(this,"Preencha os campos para edição", "Campo Vazio",JOptionPane.INFORMATION_MESSAGE);
+        }
+    }//GEN-LAST:event_SalvarActionPerformed
 
     private void VoltarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_VoltarActionPerformed
         this.dispose();
     }//GEN-LAST:event_VoltarActionPerformed
 
-    private void jTextField3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField3ActionPerformed
+    private void CampoNovoPrecoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CampoNovoPrecoActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField3ActionPerformed
+    }//GEN-LAST:event_CampoNovoPrecoActionPerformed
+
+    private void buscarProdutoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buscarProdutoActionPerformed
+        try{
+            Integer prodCod = Integer.valueOf(CampoProduto.getText());
+            Produto produto = service.getProdutoByCodigo(prodCod);
+            
+            DefaultTableModel modelo = (DefaultTableModel) TabelaProduto.getModel();
+            modelo.setRowCount(1);
+            
+            TabelaProduto.setValueAt(produto.getPCod(), 0, 0);
+            TabelaProduto.setValueAt(produto.getPDescription(), 0, 1);
+            TabelaProduto.setValueAt(produto.getPPreco(), 0, 2);
+            
+            CampoNovaDescricao.setText(produto.getPDescription());
+            CampoNovoPreco.setText(produto.getPPreco().toString()); 
+        }catch (CodigoInvalidoException e) {
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Código Invalido", JOptionPane.INFORMATION_MESSAGE);
+        }catch(NumberFormatException e){
+             JOptionPane.showMessageDialog(this,"Insira um código valido.","Código Invalido", JOptionPane.INFORMATION_MESSAGE);
+        }catch(SQLException e){
+            
+        }catch(NullPointerException e){
+            JOptionPane.showMessageDialog(this,"O produto não foi encontrado ou não existe");
+        }
+    }//GEN-LAST:event_buscarProdutoActionPerformed
 
     /**
      * @param args the command line arguments
@@ -218,19 +297,19 @@ public class EditarProduto extends javax.swing.JInternalFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextField CampoNovaDescricao;
+    private javax.swing.JTextField CampoNovoPreco;
+    private javax.swing.JTextField CampoProduto;
+    private javax.swing.JButton Salvar;
+    private javax.swing.JTable TabelaProduto;
     private javax.swing.JButton Voltar;
+    private javax.swing.JButton buscarProduto;
     private javax.swing.JPanel consultaClientePanel;
-    private javax.swing.JButton consultar;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
-    private javax.swing.JTextField jTextField3;
-    private javax.swing.JButton mostrarTodos;
     // End of variables declaration//GEN-END:variables
 
 }

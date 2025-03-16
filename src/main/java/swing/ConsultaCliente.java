@@ -172,6 +172,9 @@ public class ConsultaCliente extends javax.swing.JInternalFrame {
         try{
         Integer codigo = Integer.valueOf(InputConsulta.getText());
         Cliente cliente = service.getClienteByCodigo(codigo);
+        
+        DefaultTableModel modelo = (DefaultTableModel) TabelaClientes.getModel();
+            modelo.setRowCount(1);
 
         TabelaClientes.setValueAt(cliente.getCodigo(), 0, 0);
         TabelaClientes.setValueAt(cliente.getNome(), 0, 1);
@@ -181,6 +184,8 @@ public class ConsultaCliente extends javax.swing.JInternalFrame {
             JOptionPane.showMessageDialog(this, e.getMessage(),"Código Invalido", JOptionPane.INFORMATION_MESSAGE);
         }catch(NumberFormatException e){
              JOptionPane.showMessageDialog(this,"Insira um código valido.","Código Invalido", JOptionPane.INFORMATION_MESSAGE);
+        }catch(NullPointerException e){
+            JOptionPane.showMessageDialog(this,"O cliente não foi encontrado ou não existe");
         }
     }//GEN-LAST:event_consultarActionPerformed
 
