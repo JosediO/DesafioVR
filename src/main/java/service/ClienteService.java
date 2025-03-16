@@ -5,9 +5,10 @@
 package service;
 
 import entity.Cliente;
+import exceptions.ClienteInexistenteException;
 import exceptions.CodigoInvalidoException;
 import exceptions.DataFaturaException;
-import exceptions.LimiteException;
+import exceptions.ValorException;
 import exceptions.NomeInvalidoException;
 import gateway.ClienteGateway;
 import java.sql.SQLException;
@@ -26,7 +27,7 @@ public class ClienteService {
             throw new NomeInvalidoException("Insira um nome valido.");
         }
         if(cliente.getLimite()<=0 ){
-            throw new LimiteException("O Limite não pode ser negativo!");
+            throw new ValorException("O Limite não pode ser negativo!");
         }
         if(cliente.getFatura() < 1 || cliente.getFatura() > 31){
             throw new DataFaturaException("Insira uma data valida para cobrança.(1 a 31)");
@@ -35,7 +36,7 @@ public class ClienteService {
     }
 
     public Cliente getClienteByCodigo(Integer codigo) {
-        if (codigo == null || codigo <= 0 || !codigo.equals(Integer.class)) {
+        if (codigo == null || codigo <= 0) {
             throw new CodigoInvalidoException("Código invalido. Tente novamente!");
         }
         return clienteGateway.consultaCliente(codigo);
@@ -53,7 +54,7 @@ public class ClienteService {
             throw new NomeInvalidoException("Insira um nome valido.");
         }
         if(cliente.getLimite()<=0 ){
-            throw new LimiteException("O Limite não pode ser negativo!");
+            throw new ValorException("O Limite não pode ser negativo!");
         }
         if(cliente.getFatura() < 1 || cliente.getFatura() > 31){
             throw new DataFaturaException("Insira uma data valida para cobrança.(1 a 31)");
@@ -62,8 +63,9 @@ public class ClienteService {
     }
 
     public void deletarCliente(Integer codigo) throws SQLException { 
-        if (codigo == null || codigo <= 0 ){
-            throw new CodigoInvalidoException("Código do cliente não pode ser vazio.");
+        Boolean clientExist = clienteGateway.clientExist(codigo);
+        if (!clientExist){
+            throw new ClienteInexistenteException("Cliente não existe, insira um código valido.");
         }
         clienteGateway.deletarCliente(codigo);
     }
