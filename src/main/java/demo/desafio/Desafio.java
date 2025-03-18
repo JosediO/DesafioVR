@@ -4,6 +4,10 @@
 
 package demo.desafio;
 
+import config.ConfigJDBC;
+import java.sql.Connection;
+import swing.Principal;
+
 /**
  *
  * @author Josedi
@@ -11,6 +15,9 @@ package demo.desafio;
 public class Desafio {
 
     public static void main(String[] args) {
-        System.out.println("Hello World!");
+        java.awt.EventQueue.invokeLater(() -> new Principal().setVisible(true));
+        
+       ConfigJDBC connection = new ConfigJDBC();
+        connection.createConnection();
     }
 }

@@ -58,7 +58,7 @@ public class Principal extends javax.swing.JFrame {
         PrincipalPanel.setLayout(PrincipalPanelLayout);
         PrincipalPanelLayout.setHorizontalGroup(
             PrincipalPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 816, Short.MAX_VALUE)
+            .addGap(0, 910, Short.MAX_VALUE)
         );
         PrincipalPanelLayout.setVerticalGroup(
             PrincipalPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -213,7 +213,10 @@ public class Principal extends javax.swing.JFrame {
     }//GEN-LAST:event_ConsultaProdutosActionPerformed
 
     private void AdcionarVendasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AdcionarVendasActionPerformed
-        // TODO add your handling code here:
+        CadastrarVenda cadastrarVenda = new CadastrarVenda();
+        pack();
+        PrincipalPanel.add(cadastrarVenda);
+        cadastrarVenda.setVisible(true);
     }//GEN-LAST:event_AdcionarVendasActionPerformed
 
     private void ConsultaVendasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ConsultaVendasActionPerformed

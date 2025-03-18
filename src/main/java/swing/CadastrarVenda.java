@@ -5,16 +5,50 @@
 
 package swing;
 
+import entity.Cliente;
+import entity.ItemVenda;
+import entity.Produto;
+import entity.Venda;
+import gateway.VendasGateway;
+import java.math.BigDecimal;
+import java.sql.SQLException;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import service.ClienteService;
+import service.ProdutoService;
+
 /**
  *
  * @author Josedi
  */
 public class CadastrarVenda extends javax.swing.JInternalFrame {
-
+    
+    private ClienteService service = new ClienteService();
+    private ProdutoService serviceProduto = new ProdutoService();
+    private VendasGateway gateway = new VendasGateway();
+    
+    public BigDecimal totalGeral = BigDecimal.ZERO;
+    public BigDecimal ultValor = BigDecimal.ZERO;
+    public List<ItemVenda> items = new ArrayList<ItemVenda>();
+    
     /** Creates new form ConsultaCliente */
     public CadastrarVenda() {
         initComponents();
         setTitle("Cadastrar Cliente");
+        limparLista();
+        
+        
+        
+    }
+    
+    public void limparLista(){
+        DefaultTableModel modelo = (DefaultTableModel) TabelaProdutosVenda.getModel();
+        modelo.setRowCount(0);
     }
 
     /** This method is called from within the constructor to
@@ -29,33 +63,33 @@ public class CadastrarVenda extends javax.swing.JInternalFrame {
         jLabel4 = new javax.swing.JLabel();
         consultaClientePanel = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
+        CampoCodigoProduto = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
-        jTextField3 = new javax.swing.JTextField();
+        CampoQuantia = new javax.swing.JTextField();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        TabelaProdutosVenda = new javax.swing.JTable();
         jLabel5 = new javax.swing.JLabel();
-        jLabel6 = new javax.swing.JLabel();
+        TextTotal = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
-        jButton3 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
-        jTextField2 = new javax.swing.JTextField();
+        AddProduto = new javax.swing.JButton();
+        BuscarCliente = new javax.swing.JButton();
+        RemoverUltimoProduto = new javax.swing.JButton();
         jTextField4 = new javax.swing.JTextField();
         jLabel9 = new javax.swing.JLabel();
         jLabel10 = new javax.swing.JLabel();
-        jButton5 = new javax.swing.JButton();
-        jTextField5 = new javax.swing.JTextField();
-        jLabel11 = new javax.swing.JLabel();
+        LimparLista = new javax.swing.JButton();
+        CampoCodigoCliente = new javax.swing.JTextField();
+        TextLimiteDisponivel = new javax.swing.JLabel();
         jLabel12 = new javax.swing.JLabel();
         jLabel13 = new javax.swing.JLabel();
         jLabel14 = new javax.swing.JLabel();
-        jLabel15 = new javax.swing.JLabel();
-        jLabel16 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
+        TextDataFatura = new javax.swing.JLabel();
+        TextLimiteCliente = new javax.swing.JLabel();
+        CadastrarVenda = new javax.swing.JButton();
         Voltar = new javax.swing.JButton();
+        TextClientName = new javax.swing.JLabel();
 
         jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel4.setText("Código:");
@@ -69,15 +103,15 @@ public class CadastrarVenda extends javax.swing.JInternalFrame {
 
         jLabel3.setText("Quant:");
 
-        jTextField3.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        jTextField3.setText("1");
-        jTextField3.addActionListener(new java.awt.event.ActionListener() {
+        CampoQuantia.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        CampoQuantia.setText("1");
+        CampoQuantia.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField3ActionPerformed(evt);
+                CampoQuantiaActionPerformed(evt);
             }
         });
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        TabelaProdutosVenda.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -85,11 +119,11 @@ public class CadastrarVenda extends javax.swing.JInternalFrame {
                 {null, null, null, null}
             },
             new String [] {
-                "Quant", "Cod", "Descrição", "Preço"
+                "Quant", "Cod", "Descrição", "Preço - Unidade"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.Double.class
+                java.lang.Integer.class, java.lang.Integer.class, java.lang.String.class, java.lang.Object.class
             };
             boolean[] canEdit = new boolean [] {
                 false, false, false, false
@@ -103,39 +137,39 @@ public class CadastrarVenda extends javax.swing.JInternalFrame {
                 return canEdit [columnIndex];
             }
         });
-        jScrollPane1.setViewportView(jTable1);
-        if (jTable1.getColumnModel().getColumnCount() > 0) {
-            jTable1.getColumnModel().getColumn(0).setMaxWidth(100);
+        jScrollPane1.setViewportView(TabelaProdutosVenda);
+        if (TabelaProdutosVenda.getColumnModel().getColumnCount() > 0) {
+            TabelaProdutosVenda.getColumnModel().getColumn(0).setMaxWidth(100);
         }
 
         jLabel5.setText("Total:");
 
-        jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel6.setText("0,00");
+        TextTotal.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        TextTotal.setText("0,00");
 
         jLabel7.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         jLabel7.setText("R$");
 
         jLabel8.setText("Cliente");
 
-        jButton3.setText("Adcionar");
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
+        AddProduto.setText("Adcionar");
+        AddProduto.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
+                AddProdutoActionPerformed(evt);
             }
         });
 
-        jButton2.setText("Buscar");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        BuscarCliente.setText("Buscar");
+        BuscarCliente.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                BuscarClienteActionPerformed(evt);
             }
         });
 
-        jButton4.setText("Desfazer");
-        jButton4.addActionListener(new java.awt.event.ActionListener() {
+        RemoverUltimoProduto.setText("Desfazer");
+        RemoverUltimoProduto.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton4ActionPerformed(evt);
+                RemoverUltimoProdutoActionPerformed(evt);
             }
         });
 
@@ -145,22 +179,22 @@ public class CadastrarVenda extends javax.swing.JInternalFrame {
         jLabel10.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel10.setText("Código:");
 
-        jButton5.setText("Limpar");
-        jButton5.addActionListener(new java.awt.event.ActionListener() {
+        LimparLista.setText("Limpar");
+        LimparLista.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton5ActionPerformed(evt);
+                LimparListaActionPerformed(evt);
             }
         });
 
-        jTextField5.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        jTextField5.addActionListener(new java.awt.event.ActionListener() {
+        CampoCodigoCliente.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        CampoCodigoCliente.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField5ActionPerformed(evt);
+                CampoCodigoClienteActionPerformed(evt);
             }
         });
 
-        jLabel11.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel11.setText("0,00");
+        TextLimiteDisponivel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        TextLimiteDisponivel.setText("0");
 
         jLabel12.setText("Limite do Cliente:");
 
@@ -168,16 +202,16 @@ public class CadastrarVenda extends javax.swing.JInternalFrame {
 
         jLabel14.setText("Data da Fatura:");
 
-        jLabel15.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel15.setText("00/00");
+        TextDataFatura.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        TextDataFatura.setText("0");
 
-        jLabel16.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel16.setText("0,00");
+        TextLimiteCliente.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        TextLimiteCliente.setText("0");
 
-        jButton1.setText("Cadastrar Venda");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        CadastrarVenda.setText("Cadastrar Venda");
+        CadastrarVenda.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                CadastrarVendaActionPerformed(evt);
             }
         });
 
@@ -187,6 +221,9 @@ public class CadastrarVenda extends javax.swing.JInternalFrame {
                 VoltarActionPerformed(evt);
             }
         });
+
+        TextClientName.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        TextClientName.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
 
         javax.swing.GroupLayout consultaClientePanelLayout = new javax.swing.GroupLayout(consultaClientePanel);
         consultaClientePanel.setLayout(consultaClientePanelLayout);
@@ -205,7 +242,7 @@ public class CadastrarVenda extends javax.swing.JInternalFrame {
                                 .addGap(0, 0, Short.MAX_VALUE)
                                 .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(TextTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(4, 4, 4)
                         .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, consultaClientePanelLayout.createSequentialGroup()
@@ -216,46 +253,46 @@ public class CadastrarVenda extends javax.swing.JInternalFrame {
                             .addGroup(consultaClientePanelLayout.createSequentialGroup()
                                 .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jTextField1)
+                                .addComponent(CampoCodigoProduto)
                                 .addGap(12, 12, 12)
                                 .addComponent(jLabel3)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(consultaClientePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jButton5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jTextField3)))
+                            .addComponent(AddProduto, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(RemoverUltimoProduto, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(LimparLista, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(CampoQuantia)))
                     .addGroup(consultaClientePanelLayout.createSequentialGroup()
                         .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextField2))
+                        .addComponent(TextClientName, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(consultaClientePanelLayout.createSequentialGroup()
                         .addGap(6, 6, 6)
                         .addGroup(consultaClientePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(consultaClientePanelLayout.createSequentialGroup()
                                 .addComponent(Voltar, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jButton1))
+                                .addComponent(CadastrarVenda))
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, consultaClientePanelLayout.createSequentialGroup()
                                 .addComponent(jLabel8)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(CampoCodigoCliente, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
-                                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(BuscarCliente, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, consultaClientePanelLayout.createSequentialGroup()
                                 .addComponent(jLabel12)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel16, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(TextLimiteCliente, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(112, 112, 112)
                                 .addComponent(jLabel14)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel15, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(TextDataFatura, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(jLabel13)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                                .addComponent(TextLimiteDisponivel, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                 .addContainerGap())
         );
         consultaClientePanelLayout.setVerticalGroup(
@@ -265,46 +302,46 @@ public class CadastrarVenda extends javax.swing.JInternalFrame {
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(consultaClientePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(CampoCodigoProduto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel3)
-                    .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(CampoQuantia, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(consultaClientePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(consultaClientePanelLayout.createSequentialGroup()
-                        .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(AddProduto, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(RemoverUltimoProduto, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(LimparLista, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(13, 13, 13)
                 .addGroup(consultaClientePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
-                    .addComponent(jLabel6)
+                    .addComponent(TextTotal)
                     .addComponent(jLabel7))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(consultaClientePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jTextField5, javax.swing.GroupLayout.DEFAULT_SIZE, 23, Short.MAX_VALUE)
+                    .addComponent(CampoCodigoCliente, javax.swing.GroupLayout.DEFAULT_SIZE, 23, Short.MAX_VALUE)
                     .addGroup(consultaClientePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jLabel8)
                         .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(BuscarCliente, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(consultaClientePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(TextClientName, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(consultaClientePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel11)
-                    .addComponent(jLabel12)
-                    .addComponent(jLabel13)
-                    .addComponent(jLabel14)
-                    .addComponent(jLabel15)
-                    .addComponent(jLabel16))
+                .addGroup(consultaClientePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(TextLimiteDisponivel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel12, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel13, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel14, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(TextLimiteCliente, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(TextDataFatura, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(consultaClientePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(CadastrarVenda, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(Voltar, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
@@ -327,33 +364,98 @@ public class CadastrarVenda extends javax.swing.JInternalFrame {
         this.dispose();
     }//GEN-LAST:event_VoltarActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton1ActionPerformed
+    private void CadastrarVendaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CadastrarVendaActionPerformed
+        
+        Integer codigo = Integer.valueOf(CampoCodigoCliente.getText());
+        try{
+        Venda venda = new Venda(codigo,LocalDate.now(),totalGeral);
+        gateway.cadastrarVenda(venda);
+        System.out.println(venda.getCodigoVenda());
+        for(int i = 0; i < items.size(); i++){
+            ItemVenda itemVenda = items.get(i);
+            itemVenda.setCodVenda(venda.getCodigoVenda());
+            gateway.cadastrarVendaProdutos(itemVenda);
+               
+        }
+        System.out.println("Venda feita");
+        }catch(Exception e){
+            System.out.println(e);
+        }
+        
+    }//GEN-LAST:event_CadastrarVendaActionPerformed
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton2ActionPerformed
+    private void BuscarClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BuscarClienteActionPerformed
+        Integer codigo = Integer.valueOf(CampoCodigoCliente.getText());
+        Cliente cliente = service.getClienteByCodigo(codigo);
+        
+        TextClientName.setText(cliente.getNome());
+        TextLimiteCliente.setText(String.valueOf(cliente.getLimite()));
+        TextDataFatura.setText(String.valueOf(cliente.getFatura()));
+        
+    }//GEN-LAST:event_BuscarClienteActionPerformed
 
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton3ActionPerformed
+    private void AddProdutoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AddProdutoActionPerformed
+        
+        try{
+        Integer codigo_produto = Integer.valueOf((CampoCodigoProduto.getText()));
+        Produto produto = serviceProduto.getProdutoByCodigo(codigo_produto);
+        
+        DefaultTableModel model = (DefaultTableModel) TabelaProdutosVenda.getModel();
+        
+        ultValor =  produto.getPPreco().multiply(BigDecimal.valueOf(Integer.parseInt(CampoQuantia.getText())));
+        
+        items.add(new ItemVenda(codigo_produto,Integer.parseInt(CampoQuantia.getText()),ultValor));
+        
+         model.addRow(new Object[]{
+            CampoQuantia.getText(),
+            produto.getPCod(),
+            produto.getPDescription(),
+            produto.getPPreco()
+        });
+         
+        totalGeral = totalGeral.add(ultValor);
+        TextTotal.setText(totalGeral.toString());
+        
+        }catch(SQLException e){
+            System.out.println("Erro aqui em add produto:"+e);
+        }catch(IllegalArgumentException e){
+            System.out.println("Erro aqui em add produto:"+e);
+        }//catch(NullPointerException e){
+          //  JOptionPane.showMessageDialog(this, "Código do Produto não existe, tente novamente","Adcionar Produto", JOptionPane.INFORMATION_MESSAGE);
+        //}
+        CampoQuantia.setText("1");
+    }//GEN-LAST:event_AddProdutoActionPerformed
 
-    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton4ActionPerformed
+    private void RemoverUltimoProdutoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RemoverUltimoProdutoActionPerformed
+       DefaultTableModel model = (DefaultTableModel) TabelaProdutosVenda.getModel();
+       totalGeral = totalGeral.subtract(ultValor);
+       TextTotal.setText(totalGeral.toString());
+       Integer contRow = model.getRowCount();
 
-    private void jTextField3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField3ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField3ActionPerformed
+       ultValor = BigDecimal.ZERO;
+       if(contRow > 0){
+           model.removeRow(contRow -1);
+           items.remove(items.size()-1);
+       }else{
+           JOptionPane.showMessageDialog(this, "Não existem mais produtos!", "Remoção Negada",JOptionPane.INFORMATION_MESSAGE);
+       }
+    }//GEN-LAST:event_RemoverUltimoProdutoActionPerformed
 
-    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+    private void CampoQuantiaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CampoQuantiaActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton5ActionPerformed
+    }//GEN-LAST:event_CampoQuantiaActionPerformed
 
-    private void jTextField5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField5ActionPerformed
+    private void LimparListaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LimparListaActionPerformed
+        limparLista();
+        totalGeral = BigDecimal.ZERO;
+        ultValor = BigDecimal.ZERO;
+        items = new ArrayList<ItemVenda>();
+        TextTotal.setText(totalGeral.toString());
+    }//GEN-LAST:event_LimparListaActionPerformed
+
+    private void CampoCodigoClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CampoCodigoClienteActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField5ActionPerformed
+    }//GEN-LAST:event_CampoCodigoClienteActionPerformed
 
     /**
      * @param args the command line arguments
@@ -406,36 +508,36 @@ public class CadastrarVenda extends javax.swing.JInternalFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton AddProduto;
+    private javax.swing.JButton BuscarCliente;
+    private javax.swing.JButton CadastrarVenda;
+    private javax.swing.JTextField CampoCodigoCliente;
+    private javax.swing.JTextField CampoCodigoProduto;
+    private javax.swing.JTextField CampoQuantia;
+    private javax.swing.JButton LimparLista;
+    private javax.swing.JButton RemoverUltimoProduto;
+    private javax.swing.JTable TabelaProdutosVenda;
+    private javax.swing.JLabel TextClientName;
+    private javax.swing.JLabel TextDataFatura;
+    private javax.swing.JLabel TextLimiteCliente;
+    private javax.swing.JLabel TextLimiteDisponivel;
+    private javax.swing.JLabel TextTotal;
     private javax.swing.JButton Voltar;
     private javax.swing.JPanel consultaClientePanel;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
-    private javax.swing.JButton jButton5;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
-    private javax.swing.JLabel jLabel15;
-    private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
-    private javax.swing.JTextField jTextField3;
     private javax.swing.JTextField jTextField4;
-    private javax.swing.JTextField jTextField5;
     // End of variables declaration//GEN-END:variables
 
 }

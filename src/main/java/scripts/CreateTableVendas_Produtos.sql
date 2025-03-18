@@ -8,12 +8,11 @@
  */
 
 CREATE TABLE venda_produtos (
-    codigo_venda INTEGER NOT NULL,
-    codigo_produto INTEGER NOT NULL,
+    codigo_venda INTEGER REFERENCES vendas(codigo_venda),
+    codigo_produto INTEGER REFERENCES produtos(pcod),
     quantidade INTEGER NOT NULL,
-    PRIMARY KEY (codigo_venda, codigo_produto),
-    FOREIGN KEY (codigo_venda) REFERENCES vendas(codigo_venda),
-    FOREIGN KEY (codigo_produto) REFERENCES produtos(id)
+    totalProdutos NUMERIC(15,2) NOT NULL,
+    PRIMARY KEY (codigo_venda, codigo_produto)
 );
 
 

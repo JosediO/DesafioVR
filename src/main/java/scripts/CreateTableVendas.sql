@@ -8,10 +8,10 @@
  */
 
 CREATE TABLE vendas (
-    codigo_venda INTEGER PRIMARY KEY AUTOINCREMENT,
-    codigo_cliente INTEGER,
+    codigo_venda SERIAL PRIMARY KEY,
+    codigo_cliente INTEGER REFERENCES clientes(codigo),
     data_venda DATE NOT NULL,
-    FOREIGN KEY (codigo_cliente) REFERENCES clientes(codigo)
+    total NUMERIC(15,2) NOT NULL
 );
 
 
